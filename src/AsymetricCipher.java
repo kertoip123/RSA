@@ -6,7 +6,7 @@ public interface AsymetricCipher {
     void setPublicKey(BigInteger publicKey);
 
     /* Returns its own Public Key or null if its not yet generated (called before generateKeys()).  */
-    BigInteger getPublicKey(void);
+    BigInteger getPublicKey();
 
     /* Generate Public and Private Key. */
     void generateKeys();
