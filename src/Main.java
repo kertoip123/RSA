@@ -1,5 +1,4 @@
 import java.math.BigInteger;
-import java.util.Random;
 
 /**
  * Created by piotrek on 01.05.2016.
@@ -7,9 +6,30 @@ import java.util.Random;
 public class Main {
 
     public static void main(String [] args){
-        System.out.println(MathTools.isPrime(37));
-        System.out.println(MathTools.gcd(64, 12));
-        System.out.println(MathTools.generatePrimeNumber(4, 25));
-        
+
+        // simple test
+        String text = "abcd qwerty 123456789 zxcvbnmlkjhgfdsa//-=[];/.,";
+
+        AsymmetricCipher bob = new RSACipher();
+        AsymmetricCipher alice = new RSACipher();
+
+        // Bob generates public and private key
+        bob.generateKeys();
+
+        // Bob sends public key to Alice
+        alice.setPublicKey(bob.getPublicKey());
+        alice.setModulus(bob.getModulus());
+
+        // Alice encodes message
+        byte[] encodedText = alice.messageEncode(text.getBytes());
+
+        // Bob decodes message
+        byte[] decodedText = bob.messageDecode(encodedText);
+
+        System.out.println("plain text: " + text);
+        //System.out.println("encoded text: " + encodedText);
+        System.out.println("decoded text: " + new String(decodedText));
+
+
     }
 }
