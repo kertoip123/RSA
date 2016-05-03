@@ -1,70 +1,65 @@
 import java.math.BigInteger;
 import java.util.*;
 
-/**
- * Created by piotrek on 02.05.2016.
- */
+
 public class RSACipher implements AsymmetricCipher {
 
-    private int keyLength = 128;
+    private int mKeyLength = 128;
     private int singleBlockLen = 32;
 
-    private BigInteger d = null;
-    private BigInteger e = null;
-    private BigInteger n = null;
+    private Key mPublicKey;
+    private Key mPrivateKey;
+    private Key mPeerPublicKey = null;
 
-    public void setKeyLength(int keyLength){
-        this.keyLength = keyLength;
+    public void setPeerPublicKey(Key publicKey){
+        this.mPeerPublicKey = publicKey;
     }
 
-    public void setPublicKey(BigInteger publicKey){
-        this.e = publicKey;
+    public Key getPublicKey(){
+        return mPublicKey;
     }
 
-
-    public BigInteger getPublicKey(){
-        return e;
+    public RSACipher(){
+        generateKeys();
     }
 
-
-    public BigInteger getModulus(){
-        return n;
+    public RSACipher(int keyLength){
+        this();
+        mKeyLength = keyLength;
     }
 
-    public void setModulus(BigInteger modulus){
-        this.n = modulus;
-    }
+    private void generateKeys(){
 
-
-    public void generateKeys(){
-
-        BigInteger p = BigInteger.probablePrime(keyLength/2, new Random());
+        BigInteger p = BigInteger.probablePrime(mKeyLength /2, new Random());
         BigInteger q;
         while(true) {
-            q = BigInteger.probablePrime(keyLength/2, new Random());
+            q = BigInteger.probablePrime(mKeyLength /2, new Random());
             if(!q.equals(p))
                 break;
         }
 
         // n = p * q
-        n = p.multiply(q);
+        BigInteger n = p.multiply(q);
         //System.out.println(n.bitLength());
 
         // totient = (p-1) * (q - 1)
         BigInteger totient = p.subtract(BigInteger.ONE).multiply(q.subtract(BigInteger.ONE));
 
         //d = generatePrimeLowerThan(totient);
-        d = generateLowerCoprimeTo(totient);
-        e = d.modInverse(totient);
+        BigInteger e = generateLowerCoprimeTo(totient);
+        BigInteger d = e.modInverse(totient);
 
-        //keyLength = n.bitLength();
-        //singleBlockLen = keyLength;
+        mPublicKey  = new Key(n, e);
+        mPrivateKey = new Key(n, d);
+
+        //mKeyLength = n.bitLength();
+        //singleBlockLen = mKeyLength;
     }
 
 
     public byte[] messageEncode(byte [] message){
 
-        if(n == null)
+        if(mPeerPublicKey == null)
             return null;
 
         List<byte[]> dividedMessage = divideMessage(message, singleBlockLen/8);
@@ -75,29 +70,24 @@ public class RSACipher implements AsymmetricCipher {
         for(byte [] bytes : dividedMessage){
 
             m = new BigInteger(bytes);
-            c = m.modPow(e, n);
-            encodedBytes.add(convertNumberToBytes(c, (int)Math.ceil(n.bitLength()/8.0)+1));
+            c = m.modPow(mPeerPublicKey.getValue(), mPeerPublicKey.getModulus());
+            encodedBytes.add(convertNumberToBytes(c, mPeerPublicKey.countModulusByteSize()));
 
         }
 
         return aggregateArrays(encodedBytes);
-
     }
 
     public byte [] messageDecode(byte [] encodedBytes){
 
-        if(n == null)
-            return null;
-
-        List<byte []> dividedEncodedBytes = divideMessage(encodedBytes, (int)Math.ceil(n.bitLength()/8.0)+1);
+        List<byte []> dividedEncodedBytes = divideMessage(encodedBytes, mPrivateKey.countModulusByteSize());
         List<byte []> decodedBytes = new LinkedList<>();
 
         BigInteger m, c;
-
         for(byte [] bytes : dividedEncodedBytes){
 
             c = new BigInteger(bytes);
-            m = c.modPow(d, n);
+            m = c.modPow(mPrivateKey.getValue(), mPrivateKey.getModulus());
             decodedBytes.add(m.toByteArray());
 
         }
@@ -122,7 +112,7 @@ public class RSACipher implements AsymmetricCipher {
     private BigInteger generateLowerCoprimeTo(BigInteger n){
 
         int bitLen = n.bitLength();
-        BigInteger a = null;
+        BigInteger a;
         Random rand = new Random();
 
         while(true){

@@ -1,8 +1,3 @@
-import java.math.BigInteger;
-
-/**
- * Created by piotrek on 01.05.2016.
- */
 public class Main {
 
     public static void main(String [] args){
@@ -10,15 +5,11 @@ public class Main {
         // simple test
         String text = "abcd qwerty 123456789 zxcvbnmlkjhgfdsa//-=[];/.,";
 
-        AsymmetricCipher bob = new RSACipher();
+        AsymmetricCipher bob   = new RSACipher();
         AsymmetricCipher alice = new RSACipher();
 
-        // Bob generates public and private key
-        bob.generateKeys();
-
         // Bob sends public key to Alice
-        alice.setPublicKey(bob.getPublicKey());
-        alice.setModulus(bob.getModulus());
+        alice.setPeerPublicKey(bob.getPublicKey());
 
         // Alice encodes message
         byte[] encodedText = alice.messageEncode(text.getBytes());
@@ -30,6 +21,7 @@ public class Main {
         //System.out.println("encoded text: " + encodedText);
         System.out.println("decoded text: " + new String(decodedText));
 
-
+        System.out.println(String.format("Bob's Public Key: %s", bob.getPublicKey()));
+        System.out.println(String.format("Alice's Public Key: %s", alice.getPublicKey()));
     }
 }
