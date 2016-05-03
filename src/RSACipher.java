@@ -5,7 +5,6 @@ import java.util.*;
 public class RSACipher implements AsymmetricCipher {
 
     private int mKeyLength = 128;
-    private int singleBlockLen = 32;
 
     private Key mPublicKey;
     private Key mPrivateKey;
@@ -30,10 +29,12 @@ public class RSACipher implements AsymmetricCipher {
 
     private void generateKeys(){
 
-        BigInteger p = BigInteger.probablePrime(mKeyLength /2, new Random());
+        int lenDiff = new Random().nextInt(5);
+
+        BigInteger p = BigInteger.probablePrime(mKeyLength /2 + lenDiff, new Random());
         BigInteger q;
         while(true) {
-            q = BigInteger.probablePrime(mKeyLength /2, new Random());
+            q = BigInteger.probablePrime(mKeyLength /2 - lenDiff, new Random());
             if(!q.equals(p))
                 break;
         }
@@ -62,7 +63,7 @@ public class RSACipher implements AsymmetricCipher {
         if(mPeerPublicKey == null)
             return null;
 
-        List<byte[]> dividedMessage = divideMessage(message, singleBlockLen/8);
+        List<byte[]> dividedMessage = divideMessage(message, RandomSingleBlockLength());
         List<byte[]> encodedBytes = new LinkedList<>();
 
         BigInteger m, c;
@@ -167,5 +168,9 @@ public class RSACipher implements AsymmetricCipher {
             ret[i] = array[i-start];
         }
         return ret;
+    }
+
+    private int RandomSingleBlockLength(){
+        return (new Random().nextInt(mKeyLength/2)+8)/8;
     }
 }
