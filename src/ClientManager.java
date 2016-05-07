@@ -1,6 +1,7 @@
 import java.io.*;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.util.logging.*;
 
 public class ClientManager extends CommunicationManager{
 
@@ -8,11 +9,11 @@ public class ClientManager extends CommunicationManager{
     {
         super("Client");
         mClientSocket = new Socket(name, port);
-        System.out.println(mLogName + ": Connecting to " + name +
+        LOGGER.fine(mLogName + ": Connecting to " + name +
                 " on port " + port);
-        System.out.println(mLogName + ": Just connected to "
+        LOGGER.fine(mLogName + ": Just connected to "
                 + mClientSocket.getRemoteSocketAddress());
-
+        
         this.start();
     }
 
@@ -20,4 +21,6 @@ public class ClientManager extends CommunicationManager{
         super.close();
         mClientSocket.close();
     }
+
+
 }

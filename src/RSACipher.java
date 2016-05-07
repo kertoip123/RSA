@@ -63,7 +63,7 @@ public class RSACipher implements AsymmetricCipher {
         if(mPeerPublicKey == null)
             return null;
 
-        List<byte[]> dividedMessage = divideMessage(message, RandomSingleBlockLength());
+        List<byte[]> dividedMessage = divideMessage(message, randomSingleBlockLength());
         List<byte[]> encodedBytes = new LinkedList<>();
 
         BigInteger m, c;
@@ -170,7 +170,7 @@ public class RSACipher implements AsymmetricCipher {
         return ret;
     }
 
-    private int RandomSingleBlockLength(){
+    private int randomSingleBlockLength(){
         return (new Random().nextInt(mKeyLength/2)+8)/8;
     }
 }

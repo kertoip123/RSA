@@ -1,9 +1,61 @@
+import javafx.application.Application;
+import javafx.event.EventHandler;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
-public class Main {
+import javax.xml.bind.DatatypeConverter;
 
-    public static void main(String [] args){
+public class Main extends Application{
 
-//        // simple test
+    @Override
+    public void start(Stage primaryStage) throws Exception{
+
+        Parent root = FXMLLoader.load(getClass().getResource("config_panel.fxml"));
+
+        primaryStage.setTitle("RSA config panel");
+        primaryStage.setScene(new Scene(root));
+        primaryStage.show();
+
+
+        //test
+        new Thread(() -> {
+            test();
+        }).start();
+    }
+
+    public static void main(String [] args){ launch(args); }
+
+
+    public static MainWindowController initMainApplication() throws Exception{
+
+        FXMLLoader fxmlLoader = new FXMLLoader();
+
+        Parent root = fxmlLoader.load(Main.class.getResource("main_panel.fxml").openStream());
+
+        Stage stage = new Stage();
+        stage.setTitle("RSA Application");
+        stage.setScene(new Scene(root));
+        stage.show();
+
+        MainWindowController controller = fxmlLoader.getController();
+        controller.initLogger();
+
+        stage.setOnCloseRequest(we -> {
+            controller.closeConnection();
+            stage.close();
+            System.exit(0);
+        });
+
+        return controller;
+    }
+
+
+    private void test(){
+
+        //        // simple test
 //        String text = "abcd qwerty 123456789 zxcvbnmlkjhgfdsa//-=[];/.,";
 //
 //        AsymmetricCipher bob   = new RSACipher();
@@ -25,6 +77,11 @@ public class Main {
 //        System.out.println(String.format("Bob's Public Key: %s", bob.getPublicKey()));
 //        System.out.println(String.format("Alice's Public Key: %s", alice.getPublicKey()));
 
+        RSACipher rsa = new RSACipher(128);
+        System.out.println(rsa.getPublicKey().toString());
+        Key  key = new Key(rsa.getPublicKey().toString());
+       // System.out.println(key.toString());
+
         ServerManager serverManager = null;
         ClientManager clientManager = null;
         try{
@@ -32,10 +89,10 @@ public class Main {
             serverManager = new ServerManager(port);
             clientManager = new ClientManager("localhost", port);
             for(int i=1; i < 5; i++){
-                clientManager.send("Starting loop iteration " + i);
+                clientManager.send(new String("Starting loop iteration " + i).getBytes());
                 System.out.println("Main: Thread sleeping in iteration: " + i);
                 Thread.sleep(1000);
-                serverManager.send("Finishing loop iteration " + i);
+                serverManager.send(new String("Finishing loop iteration " + i).getBytes());
             }
         }
         catch(Exception e) {
@@ -43,17 +100,21 @@ public class Main {
         }
 
         System.out.println("Client message queue: ");
-        String message;
-        do{
+        byte [] message;
+        while(true){
             message = clientManager.getMessage();
-            System.out.println(message);
-        } while(message != null);
+            if(message == null)
+                break;
+            System.out.println(new String(message));
+        }
 
         System.out.println("Server message queue: ");
-        do{
+        while(true){
             message = serverManager.getMessage();
-            System.out.println(message);
-        } while(message != null);
+            if(message == null)
+                break;
+            System.out.println(new String(message));
+        }
 
         try{
             if(clientManager != null){

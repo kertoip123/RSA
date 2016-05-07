@@ -10,6 +10,15 @@ public class Key {
         mValue   = value;
     }
 
+    public Key(String str){
+        int end = str.indexOf(',');
+        String modulusStr = str.substring(0, end);
+        String valueStr = str.substring(end+1);
+
+        mModulus = new BigInteger(modulusStr, 10);
+        mValue = new BigInteger(valueStr, 10);
+    }
+
     public BigInteger getModulus(){
         return mModulus;
     }
@@ -23,6 +32,7 @@ public class Key {
     }
 
     public String toString(){
-        return String.format("(%s, %s)", mModulus.toString(), mValue.toString());
+        return String.format("%s,%s", mModulus.toString(), mValue.toString());
     }
+
 }

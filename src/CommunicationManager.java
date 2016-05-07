@@ -4,19 +4,25 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.LinkedList;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class CommunicationManager extends Thread{
+
+    protected static final Logger LOGGER = Logger.getLogger(CommunicationManager.class.getName());
+
     protected String  mLogName;
     protected Socket  mClientSocket;
     private Boolean mSyncMutex;
-    private LinkedList<String> mReceivedMessages;
+    private LinkedList<byte []> mReceivedMessages;
 
     public CommunicationManager(String logName) throws IOException
     {
         mLogName = logName;
         mClientSocket = null;
 
-        mReceivedMessages = new LinkedList<String>();
+        mReceivedMessages = new LinkedList<byte []>();
         mSyncMutex = true;
     }
 
@@ -25,13 +31,19 @@ public class CommunicationManager extends Thread{
             try
             {
                 manageRunIteration();
+                Thread.sleep(100);
             }
             catch(SocketTimeoutException s){
-                System.out.println(mLogName + ": My socket was timed out!");
+                //System.out.println(mLogName + ": My socket was timed out!");
+                LOGGER.fine(mLogName + ": My socket was timed out!");
             }
             catch(IOException e) {
                 mClientSocket = null;
                 e.printStackTrace();
+            }
+            catch (Exception e){
+                e.printStackTrace();
+                System.exit(1);
             }
         }
     }
@@ -43,20 +55,24 @@ public class CommunicationManager extends Thread{
 
     protected void read() throws  IOException{
         DataInputStream in = new DataInputStream(mClientSocket.getInputStream());
-        if(in.available() > 0){
-            String message = in.readUTF();
-            System.out.println(mLogName + ": Received message: " + message);
+        int count = in.available();
+        if(count > 0){
+            byte [] message = new byte [count];
+            count = in.read(message);
+            //System.out.println(mLogName + ": Received message: " + new String(message));
+            LOGGER.fine(mLogName + ": Received message: " + count);
             mReceivedMessages.add(message);
         }
     }
 
-    public void send(String message) throws IOException{
+    public void send(byte [] message) throws IOException{
         DataOutputStream out = new DataOutputStream(mClientSocket.getOutputStream());
-        out.writeUTF(message);
-        System.out.println("Client: Sent message: " + message);
+        out.write(message);
+        //System.out.println(mLogName + ": Sent message: " + new String(message));
+        LOGGER.fine(mLogName + ": Sent message: " + message.length);
     }
 
-    public String getMessage(){
+    public byte[] getMessage(){
         if(mReceivedMessages.isEmpty()){
             return null;
         }
@@ -67,5 +83,10 @@ public class CommunicationManager extends Thread{
 
     public void close() throws IOException{
         mSyncMutex = false;
+    }
+
+    public static void addLogHandler(Handler handler){
+        LOGGER.setLevel(Level.FINE);
+        LOGGER.addHandler(handler);
     }
 }

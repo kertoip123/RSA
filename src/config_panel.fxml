@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+
+
+<?import javafx.scene.control.ToggleGroup?>
+<Pane fx:controller="ConfigPanelController" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="242.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8.0.25" xmlns:fx="http://javafx.com/fxml/1">
+   <fx:define>
+      <ToggleGroup fx:id="modeToggleGroup" />
+   </fx:define>
+   <children>
+      <RadioButton fx:id="serverMode" selected="true" layoutX="34.0" layoutY="95.0" mnemonicParsing="false" onAction="#handleServerModeSelect" text="Server Mode" toggleGroup="$modeToggleGroup"/>
+      <RadioButton fx:id ="clientMode" selected="false" layoutX="34.0" layoutY="129.0" mnemonicParsing="false" onAction="#handleClientModeSelect" text="Client Mode" toggleGroup="$modeToggleGroup"/>
+      <HBox fx:id="serverModeOptions" alignment="CENTER" layoutX="174.0" layoutY="104.0" prefHeight="34.0" prefWidth="180.0" visible="true">
+         <children>
+            <Label text="Listen on port" />
+            <Separator prefWidth="15.0" visible="flase" />
+            <TextField fx:id="serverModePort" prefHeight="27.0" prefWidth="70.0" text = "53705"/>
+         </children>
+      </HBox>
+      <VBox fx:id="clientModeOptions" alignment="CENTER" layoutX="174.0" layoutY="87.0" prefHeight="69.0" prefWidth="180.0" visible="false">
+         <children>
+            <HBox alignment="CENTER_LEFT" prefHeight="34.0" prefWidth="188.0">
+               <children>
+                  <Label text="port" />
+                  <Separator prefHeight="3.0" prefWidth="53.0" visible="false" />
+                  <TextField fx:id="clientModePort" prefHeight="27.0" prefWidth="70.0" text = "53705" />
+               </children>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" prefHeight="37.0" prefWidth="189.0">
+               <children>
+                  <Label text="ip address" />
+                  <Separator prefWidth="15.0" visible="false" />
+                  <TextField fx:id="clientModeIpAddr" prefHeight="27.0" prefWidth="70.0" text = "localhost" />
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+      <Button layoutX="145.0" layoutY="178.0" mnemonicParsing="false" onAction="#handleStartBtnAction" text="Connect" />
+   </children>
+</Pane>
