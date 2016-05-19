@@ -8,6 +8,11 @@
 \usepackage{tabularx}
 \usepackage{graphicx}
 \usepackage{float}
+
+\usepackage{amsmath}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+
 \frenchspacing
 
 \usepackage{titlesec}
@@ -45,7 +50,7 @@ Klucz publiczny definiowany jest jako para liczb $(n, e)$, gdzie $n$ to moduł k
 
 Klucz prywatny definiowany jest analogicznie jako para liczb $(n, d)$, gdzie $n$ to moduł klucza, natomiast $d$ to jego wykładnik.
 
-\subsection{Szyfrowanie i deszyfrowanie}
+\subsection{Szyfrowanie i deszyfrowanie} \label{encode_decode}
 Załóżmy, że chcemy zaszyfrować wiadomość $M$. Na początku dzielimy ją na mniejsze $m$ bloki według łatwego do odwrócenia schematu. Następnie obliczamy wartość zaszyfrowanej wiadomości $c$ według wzoru:
 \begin{equation} \label{encode_eq}
 c \equiv m^e \mod n
@@ -127,10 +132,129 @@ m^{ed} \equiv m \mod pq
 
 \section{Metody użyte wewnątrz algorytmu}
 \subsection{Generacja bardzo dużych liczb pierwszych}
-\subsection{Odwrotność modulo}
+\subsection{Odwrotność modulo} \label{mod_inv}
+Podczas operacji generowania kluczy (sekcja \ref{key_gen}) konieczne jest wyznaczenie liczby całkowitej $x$ spełniającej następujący warunek:
+
+\begin{equation} 
+\label{mod_mul_inv1}
+a \equiv x^{-1} \mod n
+\end{equation}
+
+Równanie to może zostać przekształcone do następującej postaci:
+
+\begin{equation}
+\label{mod_mul_inv2}
+ax \equiv 1 \mod n
+\end{equation}
+
+Problem ten może zostać sprowadzony do \textit{Rozszerzonego Algorytmu Euklidesa}, który wyznacza liczby $x$ i $y$ z następującego równania:
+
+\begin{equation}
+\label{extended_euclidean}
+ax + by = gcd(a,b)
+\end{equation}
+
+Równanie (\ref{mod_mul_inv2}) może zostać doprowadzone do powyższej postaci poprzez następujące przekształcenia:
+
+\begin{equation}
+ax - 1 = qn
+\end{equation}
+\begin{equation}
+ax - qn = 1
+\end{equation}
+
+Powyższe równanie ma postać zgodną ze wzorem (\ref{extended_euclidean}), w tym przypadku dane jest $a$ oraz $n$, natomiast niewiadomymi są $x$ i $q$. Należy zwrócić uwagę, że do rozwiązania problemu (\ref{mod_mul_inv1}) konieczna jest tylko wartość $x$.\\
+
+Pierwszym krokiem \textit{Rozszerzonego Algorytmu Euklidesa} jest zdefiniowanie następujących oznaczeń:
+
+\begin{center}
+$r_{0} = a \quad r_{1} = b$\\
+$s_{0} = 1 \quad s_{1} = 0$\\
+$t_{0} = 0 \quad t_{1} = 1$
+\end{center}
+
+Kolejne iteracje przebiegają następująco:
+
+\begin{center}
+$r_{i+1} = r_{i-1} - q_{i} r_{i} = b$\\
+$s_{i+1} = s_{i-1} - q_{i} s_{i} = 0$\\
+$t_{i+1} = t_{i-1} - q_{i} t_{i} = 1$
+\end{center}
+
+Gdzie $q_i$ definiujemy jako iloraz liczb $r_{i-1}$ oraz $r_i$. Warunkiem stopu jest $r_{k+1} = 0$, w takim przypadku szukane wartości $x$ i $y$ to odpowiednio $s_k$ oraz $t_k$. 
+ 
 \subsection{Największy wspólny dzielnik dla dużych liczb}
+Największy wspólny dzielnik liczb $a$ i $b$ oznaczany jako $gcd(a,b)$ może zostać wyznaczony między innymi algorytmem binarnym. Został on wybrany ze względu na łatwość implementacji i wydajność, w przeciwieństwie do innych metod (np. metody Euklidesa) wymaga jedynie dzielenia przez 2. Algorytm został przedstawiony w postaci pseudokodu (funkcja \textit{gcd}).
+
+\begin{algorithm} \label{fun_gcd}
+\begin{algorithmic}[1]
+\Function{$gcd$}{$a$, $b$}
+\State $d := 0$
+\While {($a \mod 2 == 0$) and ($b \mod 2 == 0$)} 
+	\State $a : =a/2$
+	\State $b : =b/2$
+	\State $d : = d + 1$
+\EndWhile
+
+\While {$a \neq b$} 
+	 \If{$a \mod 2 == 0$} \State {$a := a/2$} 
+	 \ElsIf{$b \mod 2 == 0$} \State{$b := b/2$} 
+	 \ElsIf{$a > b$} \State{$a := (a - b)/2$}
+	 \Else \State{$b := (b - a)/2$}
+	 \EndIf
+\EndWhile
+
+\State \Return {$a \cdot 2^d$}
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+
 \subsection{Operacja szyfrowania}
+
+Zgodnie z opisem w sekcji \ref{encode_decode} szyfrowanie polega na przeprowadzeniu operacji:
+\begin{equation}
+c \equiv b^e \mod m
+\end{equation}
+
+W celu poprawienia wydajności można do tego celu użyć metody binarnej, która została przedstawiona postaci pseudokodu (funkcja \textit{modPow}).
+
+
+\begin{algorithm} \label{fun_modPow}
+\begin{algorithmic}[1]
+\Function{$modPow$}{$b$, $e$, $m$}
+\If{$m == 1$} 
+	\State {\Return {$0$}} 
+\EndIf
+
+\State $res := 1$
+\State $b := b \mod m$
+\While {$e > 0$} 
+	\If{$e \mod 2 == 1$} 
+	\State {$res := (res \cdot b) \mod m$} 
+	\EndIf
+	\State {$e := e/2$}
+	\State {$b := (b \cdot b) \mod m$}
+\EndWhile
+
+\State \Return {$res$}
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
 \subsection{Operacja deszyfrowania}
+
+Podobnie jak operacja szyfrowania, także operacja deszyfrowania w przypadku dużych liczb może być bardzo złożona obliczeniowo. Jedną z możliwości jest wykorzystanie metody analogicznej jak przy szyfrowaniu. Warto zwrócić uwagę, że w przypadku deszyfrowania znamy liczby $p$ i $q$ które zostały wykorzystane do generacji kluczy (sekcja \ref{key_gen}). Obliczenia mogą zostać dodatkowo przyspieszone poprzez wykorzystanie \textit{Chińskiego twierdzenia o resztach}, przyjmując oznaczenia jak w sekcji \ref{encode_decode} możemy odczytać wiadomość $m$ stosując następujące przekształcenia:\\
+\\
+$d_p = d \mod (p-1)$\\ 
+$d_q = d \mod (q-1)$\\
+$q_{inv} = q^{-1} \mod p$\\ \\ 
+$m_1 = c^{d_p} \mod p$\\
+$m_2 = c^{d_q} \mod q$\\
+$h = (q_{inv} \cdot (m_1 - m_2)) \mod p$\\
+$m = m_2 + h \cdot q$\\
+
+Do obliczenia wartości $q_{inv}$ możemy użyć metody opisanej w sekcji \ref{mod_inv}, natomiast wartości $m_1$ oraz $m_2$ mogą zostać wyznaczone przy pomocy metody binarnej opisanej w poprzednie sekcji.
 
 \section{Implementacja}
 \subsection{Użyty język i biblioteki}
