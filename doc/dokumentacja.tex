@@ -20,12 +20,109 @@
 	\maketitle
 
 \section{Opis metody}
-\subsection{Geneza}
-\subsection{Generacja kluczy}
+Algorytm RSA jest jednym z pierwszych praktycznych kryptosystemów korzystających z koncepcji klucza publicznego i jest on powszechnie stosowany do zabezpieczenia transmisji danych. W tym kryptosystemie, klucz szyfrujący jest publiczny i różni się od klucza deszyfrującego, który jest tajny. Ta asymetria kluczy wynika z faktu, że niezwykle trudno jest rozłożyć na czynniki iloczyn dwóch bardzo dużych liczb pierwszych. 
+
+Nazwa algorytmu RSA pochodzi od pierwszych liter nazwisk jego twórców - Ron Rivesta, Adi Shamira oraz Leonarda Adlemana, którzy po raz pierwszy opisali go w 1977r.
+
+Algorytm RSA jest stosunkowo wolnym algorytm i z tego powodu jest on rzadziej używany do bezpośrednio szyfrowania danych użytkownika. W większości przypadków, przy pomocy RSA przekazywane są klucze do symetrycznych algorytmów szyfrujących, które potem mogą być wykorzystywane do stosunkowo bezpiecznej wymiany danych z dużo wyższą prędkością.
+
+\subsection{Generacja kluczy} \label{key_gen}
+
+Zarówno klucz prywatny jak i publiczny, które wykorzystywane są w algorytmie RSA tworzone są według poniższej procedury:
+
+\begin{enumerate}
+\item Wybierz dwie różne liczby pierwszy $p$ oraz $q$.
+\item Oblicz $n = pq$. $n$ jest modułem (ang. modulus) zarówno klucza prywatnego jak i publicznego. Oznacza również ich długość (zazwyczaj podawana w bitach).
+\item Oblicz funkcję Eulera - tzw. tocjent: $\phi(n) = \phi(p) \phi(q) = (p-1)(q-1)$
+\item Wybierz liczbę $e$ taką że: $1<e<\phi(n)$ oraz $NWD(e,phi(n))=1$.
+\item Ustal liczbę $d$ taką że:
+\begin{equation} \label{ed_cond_eq}
+d e \equiv 1 \mod \phi(n).
+\end{equation}
+\end{enumerate}
+
+Klucz publiczny definiowany jest jako para liczb $(n, e)$, gdzie $n$ to moduł klucza, natomiast $e$ to jego wykładnik.
+
+Klucz prywatny definiowany jest analogicznie jako para liczb $(n, d)$, gdzie $n$ to moduł klucza, natomiast $d$ to jego wykładnik.
+
 \subsection{Szyfrowanie i deszyfrowanie}
+Załóżmy, że chcemy zaszyfrować wiadomość $M$. Na początku dzielimy ją na mniejsze $m$ bloki według łatwego do odwrócenia schematu. Następnie obliczamy wartość zaszyfrowanej wiadomości $c$ według wzoru:
+\begin{equation} \label{encode_eq}
+c \equiv m^e \mod n
+\end{equation} 
+
+Załóżmy, że chcemy odszyfrować szyfrogram $c$ i odzyskać wiadomość $m$. Obliczamy wartość odszyfrowanego fragmentu wiadomości według wzoru:
+\begin{equation} \label{decode_eq}
+m \equiv c^d \mod n
+\end{equation}
+
 \subsection{Prosty przykład}
-\subsection{Szyfrowanie długich wiadomości}
+
+Postępujemy według przepisu \ref{key_gen}:
+
+\begin{enumerate}
+\item $p = 61$ oraz $q = 53$.
+\item $n = 61 \times 53 = 3233 $.
+\item $\phi(3233) = (61-1)(53-1) = 3120$.
+\item $e=17$, ponieważ $1<17<3120$ oraz $NWD(3120, 17) = 1$.
+\item $d=2753$, ponieważ $2753 \times 17 \equiv 1 \mod 3120$.
+\end{enumerate}
+
+Publiczny klucz to para: $(n, e)=(3233,17)$.
+Prywatny klucz to para: $(n, e)=(3233,2753)$.
+
+Szyfrogram dla wiadomości $m = 65$ obliczamy z podanego wzoru (\ref{encode_eq}):
+\begin{equation} 
+m^e = 65^{17} \equiv 2790 \mod 3233
+\end{equation}
+
+Oryginalną wiadomość możemy odszyfrować za pomocą wzoru (\ref{decode_eq}):
+\begin{equation} 
+c^d = 2790^{2753} \equiv 65 \mod 3233
+\end{equation}
+
 \subsection{Dowód poprawności}
+Dowód poprawności algorytmu RSA opiera się na małym twierdzeniu Fermata. Jeżeli $p$ jest liczbą pierwszą i $a$ nie jest podzielne przez $p$ to wtedy:
+
+\begin{equation} \label{fermat_eq}
+a^{p-1} \equiv 1 \mod p
+\end{equation}
+
+Chcemy pokazać, że $m^{ed} \equiv m \mod pq$ dla każdej liczby całkowitej $m$. Zgodnie z wcześniejszymi założeniami $p$ oraz $q$ są różnymi liczbami pierwszymi, natomiast $e$ oraz $d$ to liczby całkowite spełniające warunek (\ref{ed_cond_eq}).
+Ponieważ: $\phi(pq) = (p-1)(q-1)$, to na mocy (\ref{ed_cond_eq}) możemy stwierdzić, że dla każdego dodatniego i całkowitego $h$ zachodzi równanie:
+
+\begin{equation}  \label{h_cond_eq}
+ed-1=h(p-1)(q-1)
+\end{equation}
+
+Do zweryfikowania, czy liczby takie jak $m$ czy $m^{ed}$ przystają do siebie modulo $pq$ wystarczy sprawdzić, czy przystają one modulo $p$ oraz modulo $q$ oddzielnie. Wynika to, z chińskiego twierdzenia o reszcie.
+
+Do pokazania, że $m^{ed} \equiv m \mod p$ rozważymy dwa przypadki. 
+
+\begin{enumerate}
+\item $m \equiv 0 \mod p$
+
+Wtedy:
+\begin{equation} 
+m^{ed} \equiv 0 \equiv m \mod p
+\end{equation}
+
+\item $m \not\equiv 0 \mod p$
+
+Przekształcamy przy pomocy zależności (\ref{h_cond_eq}) oraz twierdzenia Fermata (\ref{fermat_eq}):
+
+\begin{equation} 
+m^{ed} = m^{ed-1}m = m^{h(p-1)(q-1)}m = (m^{p-1})^{h(q-1)}m \equiv 1^{h(q-1)}m \equiv m \mod p
+\end{equation}
+
+\end{enumerate}
+
+Analogiczne rozumowanie można przeprowadzić dla czynnika $q$. Te dwie zależności dowodzą poprawności algorytmu RSA:
+
+\begin{equation}
+m^{ed} \equiv m \mod pq
+\end{equation}
+
 \subsection{Próby złamania}
 
 \section{Metody użyte wewnątrz algorytmu}
