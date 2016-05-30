@@ -39,6 +39,9 @@ public class MainWindowController {
 
 
     @FXML protected void handleStartAction(ActionEvent event) {
+
+        RSACipher.setLogger(logger);
+
         int keyLen = Integer.parseInt(keyLenTextField.getText());
         mCipher = new RSACipher(keyLen);
 
@@ -51,6 +54,7 @@ public class MainWindowController {
         }
 
         startBtn.setDisable(true);
+        keyLenTextField.setDisable(true);
 
          waitForPeerKey();
 
@@ -67,20 +71,26 @@ public class MainWindowController {
 
         byte [] decoded = mCipher.messageDecode(msg);
         receivedMsgTextArea.setText(Arrays.toString(msg));
-        decodedMsgTextArea.setText(new String(decoded));
+        try {
+            decodedMsgTextArea.setText(new String(decoded, "UTF-8"));
+        } catch (Exception e){
+            System.out.println(e.getMessage());
+        }
     }
+
 
     @FXML protected void handleEncodeSendAction(ActionEvent event) {
 
-        String msg = plainTextArea.getText();
-        byte [] encodedMsg = mCipher.messageEncode(msg.getBytes());
         try {
+            String msg = plainTextArea.getText();
+            byte [] encodedMsg = mCipher.messageEncode(msg.getBytes("UTF-8"));
+
             mCommunicationManager.send(encodedMsg);
-        }catch (Exception e){
+            encodedMsgTextArea.setText(Arrays.toString(encodedMsg));
+
+        } catch (Exception e){
             logger.fine(e.getMessage());
         }
-
-        encodedMsgTextArea.setText(Arrays.toString(encodedMsg));
     }
 
 
@@ -126,11 +136,16 @@ public class MainWindowController {
                         continue;
                     }
 
-                    logger.fine("Public key received");
-                    mCipher.setPeerPublicKey(new Key(new String(msg)));
+                    Key receivedKey = new Key(new String(msg));
+                    logger.fine("Public key received:\n" + receivedKey.readAsPublicKey());
 
-                    readNextMsgBtn.setDisable(false);
-                    encodeSendBtn.setDisable(false);
+                    mCipher.setPeerPublicKey(receivedKey);
+
+                    Platform.runLater(() -> {
+                        readNextMsgBtn.setDisable(false);
+                        encodeSendBtn.setDisable(false);
+                    });
+
 
                     break;
                 }

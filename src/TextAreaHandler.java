@@ -1,5 +1,6 @@
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Level;
@@ -24,9 +25,14 @@ public class TextAreaHandler extends StreamHandler {
     @Override
     public void publish(final LogRecord record) {
         Platform.runLater(() -> {
+
+            Date date = new Date(record.getMillis());
+            DateFormat formatter = new SimpleDateFormat("HH:mm:ss");
+            String dateFormatted = formatter.format(date);
+
             StringWriter text = new StringWriter();
             PrintWriter out = new PrintWriter(text);
-            out.println(record.getMessage());
+            out.println(dateFormatted + " " + record.getMessage());
             mTextArea.appendText(text.toString());
          });
 

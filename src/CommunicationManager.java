@@ -60,7 +60,7 @@ public class CommunicationManager extends Thread{
             byte [] message = new byte [count];
             count = in.read(message);
             //System.out.println(mLogName + ": Received message: " + new String(message));
-            LOGGER.fine(mLogName + ": Received message: " + count);
+            LOGGER.fine(mLogName + ": Received message: " + count + " bytes");
             mReceivedMessages.add(message);
         }
     }
@@ -69,7 +69,7 @@ public class CommunicationManager extends Thread{
         DataOutputStream out = new DataOutputStream(mClientSocket.getOutputStream());
         out.write(message);
         //System.out.println(mLogName + ": Sent message: " + new String(message));
-        LOGGER.fine(mLogName + ": Sent message: " + message.length);
+        LOGGER.fine(mLogName + ": Sent message: " + message.length + " bytes");
     }
 
     public byte[] getMessage(){

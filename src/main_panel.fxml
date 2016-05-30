@@ -10,14 +10,14 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox alignment="BOTTOM_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/null" xmlns:fx="http://javafx.com/fxml/1" fx:controller="MainWindowController">
+<VBox alignment="BOTTOM_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="475.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/null" xmlns:fx="http://javafx.com/fxml/1" fx:controller="MainWindowController">
    <children>
       <HBox alignment="CENTER" prefHeight="68.0" prefWidth="600.0">
          <children>
             <Label text="Key Length " />
             <TextField fx:id="keyLenTextField" prefWidth="70" />
             <Separator prefWidth="50.0" visible="false" />
-            <Button fx:id="startBtn" onAction="#handleStartAction" mnemonicParsing="false" prefWidth="100" text="Start" />
+            <Button fx:id="startBtn" mnemonicParsing="false" onAction="#handleStartAction" prefWidth="100" text="Start" />
          </children>
          <VBox.margin>
             <Insets left="150.0" right="150.0" />
@@ -37,7 +37,7 @@
                         <Label text="Received Message" />
                         <ScrollPane fitToWidth="true" prefHeight="69.0" style="-fx-background-color: transparent;">
                            <content>
-                              <TextArea fx:id="receivedMsgTextArea" prefHeight="65.0" wrapText="true" editable="false" />
+                              <TextArea fx:id="receivedMsgTextArea" editable="false" prefHeight="65.0" wrapText="true" />
                            </content>
                            <VBox.margin>
                               <Insets left="5.0" right="5.0" />
@@ -49,14 +49,14 @@
                         <Label text="Decoded Message" />
                         <ScrollPane fitToWidth="true" prefHeight="67.0" style="-fx-background-color: transparent;">
                            <content>
-                              <TextArea fx:id="decodedMsgTextArea" prefHeight="65.0" wrapText="true" editable="false" />
+                              <TextArea fx:id="decodedMsgTextArea" editable="false" prefHeight="65.0" wrapText="true" />
                            </content>
                            <VBox.margin>
                               <Insets left="5.0" right="5.0" />
                            </VBox.margin></ScrollPane>
                      </children>
                   </VBox>
-                  <Button fx:id="readNextMsgBtn" onAction="#handleReadNextAction" disable="true" mnemonicParsing="false" text="Read next message" />
+                  <Button fx:id="readNextMsgBtn" disable="true" mnemonicParsing="false" onAction="#handleReadNextAction" text="Read next message" />
                </children>
             </VBox>
             <Separator orientation="VERTICAL" />
@@ -72,7 +72,7 @@
                         <Label text="Plain Text" />
                         <ScrollPane fitToWidth="true" prefHeight="69.0" style="-fx-background-color: transparent;">
                            <content>
-                              <TextArea fx:id="plainTextArea" prefHeight="65.0" wrapText="true" editable="true"/>
+                              <TextArea fx:id="plainTextArea" editable="true" prefHeight="65.0" wrapText="true" />
                            </content>
                            <VBox.margin>
                               <Insets left="5.0" right="5.0" />
@@ -82,7 +82,7 @@
                         <Label text="Encoded Message" />
                         <ScrollPane fitToWidth="true" prefHeight="69.0" style="-fx-background-color: transparent;">
                            <content>
-                              <TextArea fx:id="encodedMsgTextArea" prefHeight="65.0" wrapText="true" editable="false" />
+                              <TextArea fx:id="encodedMsgTextArea" editable="false" prefHeight="65.0" wrapText="true" />
                            </content>
                            <VBox.margin>
                               <Insets left="5.0" right="5.0" />
@@ -90,7 +90,7 @@
                         </ScrollPane>
                      </children>
                   </VBox>
-                  <Button fx:id="encodeSendBtn" onAction="#handleEncodeSendAction" disable="true" mnemonicParsing="false" text="Decode and send" />
+                  <Button fx:id="encodeSendBtn" disable="true" mnemonicParsing="false" onAction="#handleEncodeSendAction" text="Decode and send" />
                </children>
             </VBox>
          </children>
@@ -98,9 +98,9 @@
       <Separator prefWidth="200.0" />
       <Separator orientation="VERTICAL" prefHeight="30.0" visible="false" />
       <Label text="Log" />
-      <ScrollPane fitToWidth="true" prefHeight="75.0" prefWidth="600.0">
+      <ScrollPane fitToWidth="true" prefHeight="161.0" prefWidth="600.0">
          <content>
-            <TextArea fx:id="logTextArea" prefHeight="60.0" prefWidth="598.0" wrapText="true" editable="false"/>
+            <TextArea fx:id="logTextArea" editable="false" prefHeight="145.0" prefWidth="598.0" wrapText="true" />
          </content>
       </ScrollPane>
    </children>

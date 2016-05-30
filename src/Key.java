@@ -1,3 +1,5 @@
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.math.BigInteger;
 
 public class Key {
@@ -33,6 +35,17 @@ public class Key {
 
     public String toString(){
         return String.format("%s,%s", mModulus.toString(), mValue.toString());
+    }
+
+
+    public String readAsPublicKey(){
+
+        StringWriter text = new StringWriter();
+        PrintWriter out = new PrintWriter(text);
+        out.println("n = " + mModulus.toString(16));
+        out.print("e = " + mValue.toString(16));
+
+        return text.toString();
     }
 
 }

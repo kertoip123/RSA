@@ -21,9 +21,11 @@ public class Main extends Application{
 
 
         //test
+        /*
         new Thread(() -> {
             test();
         }).start();
+        */
     }
 
     public static void main(String [] args){ launch(args); }

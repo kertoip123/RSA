@@ -1,8 +1,13 @@
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.math.BigInteger;
 import java.util.*;
+import java.util.logging.Logger;
 
 
 public class RSACipher implements AsymmetricCipher {
+
+    private static Logger logger;
 
     private int mKeyLength = 128;
 
@@ -10,9 +15,7 @@ public class RSACipher implements AsymmetricCipher {
     private Key mPrivateKey;
     private Key mPeerPublicKey = null;
 
-    public void setPeerPublicKey(Key publicKey){
-        this.mPeerPublicKey = publicKey;
-    }
+    public void setPeerPublicKey(Key publicKey){ this.mPeerPublicKey = publicKey; }
 
     public Key getPublicKey(){
         return mPublicKey;
@@ -52,6 +55,15 @@ public class RSACipher implements AsymmetricCipher {
 
         mPublicKey  = new Key(n, e);
         mPrivateKey = new Key(n, d);
+
+
+        StringWriter text = new StringWriter();
+        PrintWriter out = new PrintWriter(text);
+        out.println("Generated Keys:");
+        out.println("n = " + n.toString(16));
+        out.println("e = " + e.toString(16));
+        out.print("d = " + d.toString(16));
+        logger.fine(text.toString());
 
         //mKeyLength = n.bitLength();
         //singleBlockLen = mKeyLength;
@@ -173,4 +185,22 @@ public class RSACipher implements AsymmetricCipher {
     private int randomSingleBlockLength(){
         return (new Random().nextInt(mKeyLength/2)+8)/8;
     }
+
+    public static void setLogger(Logger logger){
+        RSACipher.logger = logger;
+    }
+    /*
+    public String getGeneratedKeysInfo(){
+
+        BigInteger n = mPublicKey.getModulus();
+        BigInteger e = mPublicKey.getValue();
+        BigInteger d = mPrivateKey.getValue();
+
+        String result = "n = " + n.toString(16) + "\n" +
+                "e = " + e.toString(16) + "\n" +
+                "d = " + d.toString(16);
+
+        return result;
+    }
+    */
 }
