@@ -27,7 +27,7 @@
 	\maketitle
 
 \section{Opis metody}
-Algorytm RSA jest jednym z pierwszych praktycznych kryptosystemów korzystających z koncepcji klucza publicznego i jest on powszechnie stosowany do zabezpieczenia transmisji danych. W tym kryptosystemie, klucz szyfrujący jest publiczny i różni się od klucza deszyfrującego, który jest tajny. Ta asymetria kluczy wynika z faktu, że niezwykle trudno jest rozłożyć na czynniki iloczyn dwóch bardzo dużych liczb pierwszych. 
+Algorytm RSA jest jednym z pierwszych praktycznych kryptosystemów korzystających z koncepcji klucza publicznego i jest on powszechnie stosowany do zabezpieczenia transmisji danych. W tym kryptosystemie, klucz szyfrujący jest publiczny i różni się od klucza deszyfrującego, który jest tajny. Ta asymetria kluczy wynika z~faktu, że niezwykle trudno jest rozłożyć na czynniki iloczyn dwóch bardzo dużych liczb pierwszych. 
 
 Nazwa algorytmu RSA pochodzi od pierwszych liter nazwisk jego twórców - Ron Rivesta, Adi Shamira oraz Leonarda Adlemana, którzy po raz pierwszy opisali go w 1977r.
 
@@ -50,7 +50,7 @@ d e \equiv 1 \mod \phi(n).
 
 Klucz publiczny definiowany jest jako para liczb $(n, e)$, gdzie $n$ to moduł klucza, natomiast $e$ to jego wykładnik.
 
-Klucz prywatny definiowany jest analogicznie jako para liczb $(n, d)$, gdzie $n$ to moduł klucza, natomiast $d$ to jego wykładnik.
+Klucz prywatny definiowany jest analogicznie jako para liczb $(n, d)$, gdzie $n$ to moduł klucza, natomiast $d$~to jego wykładnik.
 
 \subsection{Szyfrowanie i deszyfrowanie} \label{encode_decode}
 Załóżmy, że chcemy zaszyfrować wiadomość $M$. Na początku dzielimy ją na mniejsze $m$ bloki według łatwego do odwrócenia schematu. Następnie obliczamy wartość zaszyfrowanej wiadomości $c$ według wzoru:
@@ -130,10 +130,33 @@ Analogiczne rozumowanie można przeprowadzić dla czynnika $q$. Te dwie zależno
 m^{ed} \equiv m \mod pq
 \end{equation}
 
-\subsection{Próby złamania}
 
 \section{Metody użyte wewnątrz algorytmu}
+
 \subsection{Generacja bardzo dużych liczb pierwszych}
+
+Sprawdzenie czy dana liczba jest pierwsza w przypadku liczb o rozmiarze rzędu kilkuset bitów jest operacją niezwykle złożoną obliczeniowo. W celu optymalizacji stosuje się bardziej zaawansowane testy pierwszości. Przykładem może być test \textit{Millera-Rabina} wykorzystywany w wielu implementacjach.\\ 
+
+
+\begin{samepage}
+\noindent Załóżmy ze chcemy wykonać test na nieparzystej liczbie $n$, metoda składa się z następujących kroków:
+
+\begin{enumerate}
+\item Zdefiniuj parametr $k$ określający dokładność testu (zazwyczaj przyjmuje się $k=100$).
+\item Wyznacz maksymalną potęgę dwójki dzielącą $n-1$ i zastosuj równość $n-1 = 2^s \cdot d$.
+\item {Powtórz $k$ razy:
+	\begin{itemize}
+		\item wybierz losowe $a$ ze zbioru $\{1,2,\ldots,n-1\}$
+		\item jeżeli $a^d \not\equiv 1$ i $a^{2rd} \not\equiv -1 \mod n$ dla każdego $r$ ze zbioru $\{1,2,\ldots,s-1\}$ badana liczba jest \textbf{złożona}
+	\end{itemize}
+	}
+\item Test przeszedł pomyślnie, badana liczba jest \textbf{prawdopodobnie pierwsza}
+\end{enumerate}
+
+\end{samepage}
+
+\noindent W przypadku przedstawionej metody, prawdopodobieństwo, że liczba złożona zostanie zaklasyfikowana jako pierwsza wynosi $4^{-k}$.
+
 \subsection{Odwrotność modulo} \label{mod_inv}
 Podczas operacji generowania kluczy (sekcja \ref{key_gen}) konieczne jest wyznaczenie liczby całkowitej $x$ spełniającej następujący warunek:
 
@@ -186,7 +209,7 @@ $t_{i+1} = t_{i-1} - q_{i} t_{i} = 1$
 Gdzie $q_i$ definiujemy jako iloraz liczb $r_{i-1}$ oraz $r_i$. Warunkiem stopu jest $r_{k+1} = 0$, w takim przypadku szukane wartości $x$ i $y$ to odpowiednio $s_k$ oraz $t_k$. 
  
 \subsection{Największy wspólny dzielnik dla dużych liczb}
-Największy wspólny dzielnik liczb $a$ i $b$ oznaczany jako $gcd(a,b)$ może zostać wyznaczony między innymi algorytmem binarnym. Został on wybrany ze względu na łatwość implementacji i wydajność, w przeciwieństwie do innych metod (np. metody Euklidesa) wymaga jedynie dzielenia przez 2. Algorytm został przedstawiony w postaci pseudokodu (funkcja \hyperref[fun_gcd]{\textit{gcd}}).
+Największy wspólny dzielnik liczb $a$ i $b$ oznaczany jako $gcd(a,b)$ może zostać wyznaczony między innymi algorytmem binarnym. Został on wybrany ze względu na łatwość implementacji i wydajność, w przeciwieństwie do innych metod (np. metody Euklidesa) wymaga jedynie dzielenia przez 2. Algorytm został przedstawiony w~postaci pseudokodu (funkcja \hyperref[fun_gcd]{\textit{gcd}}).
 
 \begin{algorithm} \label{fun_gcd}
 \begin{algorithmic}[1]
@@ -258,6 +281,7 @@ $m = m_2 + h \cdot q$\\
 
 Do obliczenia wartości $q_{inv}$ możemy użyć metody opisanej w sekcji \ref{mod_inv}, natomiast wartości $m_1$ oraz $m_2$ mogą zostać wyznaczone przy pomocy metody binarnej opisanej w poprzednie sekcji.
 
+
 \section{Implementacja}
 \subsection{Użyty język i biblioteki}
 
@@ -265,27 +289,49 @@ Implementacja algorytmu RSA została wykonana w języku \textit{JAVA}, napisany 
 
 \subsection{Funkcjonalność}
 
-Jak zostało wspomniane w poprzednim punkcie aplikacja służy do przesyłania wiadomości tekstowych. Jej działanie może zostać przetestowane poprzez uruchomienie na dwóch komputerach znajdujących się w jednej sieci lub z wykorzystaniem jednego komputera i lokalnego hosta (dokładny opis w rozdziale \ref{}). 
+Jak zostało wspomniane w poprzednim podpunkcie, aplikacja służy do przesyłania wiadomości tekstowych. Jej działanie może zostać przetestowane poprzez uruchomienie na dwóch komputerach znajdujących się w jednej sieci lub z wykorzystaniem jednego komputera i lokalnego hosta (dokładny opis w rozdziale \ref{subsec:manual}). 
 
 Program może zostać uruchomiony w trybie klienta lub serwera, przesyłanie wiadomości jest możliwe oczywiście w obu kierunkach. Dodatkowo w każdym kierunku komunikacji mamy możliwość określenia innej długości klucza szyfrującego. Po nawiązaniu połączenia następuje generacja klucza publicznego i prywatnego po obu stronach, następnie strony wymieniają się kluczami publicznymi. Od tego momentu zarówno serwer jak i klient mogą przesyłać szyfrowane wiadomości. 
 
-W sekcji \ref{} został przedstawiony schemat szyfrowania pojedynczego bloku danych, w przypadku napisanej aplikacji istnieje możliwość wysyłania wiadomości tekstowych o dowolnej długości. Napisany tekst jest dzielony na równe bloki (ostatni jest oczywiście dopełniany zerami), długość tego bloku jest na nowo losowana dla każdej kolejnej wiadomości. Podczas szyfrowania zgodnie ze wzorem (\ref{}) konieczne jest dodatkowo dopełnienie otrzymanej wartości zerowymi bitami tak, aby jej długość była równa długości klucza $n$ (sekcja \ref{}). Dzięki temu każdy zaszyfrowany blok ma identyczną długość w bitach i zaszyfrowana wiadomość może być łatwo podzielona przez odbiorcę, następnie każdy z bloków jest rozszyfrowywany osobno.
+W sekcji \ref{encode_decode} został przedstawiony schemat szyfrowania pojedynczego bloku danych, w przypadku napisanej aplikacji istnieje możliwość wysyłania wiadomości tekstowych o dowolnej długości. Napisany tekst jest dzielony na równe bloki (ostatni jest oczywiście dopełniany zerami), długość takiego bloku jest na nowo losowana dla każdej kolejnej wiadomości. Podczas szyfrowania zgodnie ze wzorem (\ref{encode_eq}) konieczne jest dodatkowo dopełnienie otrzymanej wartości zerowymi bitami tak, aby jej długość była równa długości klucza $n$ (sekcja \ref{key_gen}). Dzięki temu każdy zaszyfrowany blok ma identyczną długość i zaszyfrowana wiadomość może być łatwo podzielona przez odbiorcę.
 
 W oknie aplikacji oprócz podglądu wiadomości w postaci normalnego tekstu, dostępna jest także jej zakodowana postać (w tym przypadku wiadomość jest wyświetlana jako ciąg bajtów). Dodatkowo w oknie komunikatów wyświetlane są informacje o przychodzących i wysyłanych wiadomościach oraz klucze wykorzystywane do szyfrowania. 
 
 \subsection{Manual}
+\label{subsec:manual}
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[scale=0.85]{img/config_panel.png}
+	\caption{Panel Konfiguracyjny w zależności od wybranego trybu}
+	\label{fig:config_panel}
+\end{figure}
 
 W celu przetestowania aplikacji należy postępować zgodnie z poniższą instrukcją:
 
 \begin{enumerate}
-\item Program należy uruchomić na dwóch komputerach znajdujących się w jednej sieci lub dwa razy na jednym komputerze (okno aplikacji nie jest zbyt duże zatem bez problemu można operować na dwóch jednocześnie).
+\item Program należy uruchomić (plik \textit{rsa.jar}) na dwóch komputerach znajdujących się w jednej sieci lub dwa razy na jednym komputerze (okno aplikacji nie jest zbyt duże, zatem bez problemu można operować na dwóch jednocześnie).
 
-\item Po uruchomieniu ukaże nam się ekran przedstawiony na rysunku \ref{}. Najpierw w jednej aplikacji wybieramy \textit{server mode} i naciskamy \textit{connect}, następnie drugą aplikacje uruchamiamy w trybie \textit{client mode}.
+\item Po uruchomieniu ukaże nam się ekran przedstawiony na rysunku \ref{fig:config_panel}. Najpierw w jednej aplikacji wybieramy \textit{Server Mode} i naciskamy \textit{Connect}, następnie drugą aplikacje uruchamiamy w trybie \textit{Client Mode}.
 
-\item Po tej czynności ukaże nam się główne okno programu (rysunek \ref{}). W oknie na dole powinien pojawić się komunikat o pomyślnym nawiązaniu połączenia. w tym momencie wystarczy zdefiniować w obu oknach długość klucza i nacisnąć przycisk \textit{start}.
+\item Po tej czynności ukaże nam się główne okno programu (rysunek \ref{fig:main_window}). W polu na dole powinien pojawić się komunikat o pomyślnym nawiązaniu połączenia. W tym momencie należy w obu aplikacjach zdefiniować długość klucza i nacisnąć przycisk \textit{Start}.
 
-\item Gdy w oknie komunikatów pojawi się komunikat o wygenerowaniu kluczy oraz klucz publiczny otrzymany od drugiego użytkownika, możemy przejść do wysyłania i odbierania wiadomości. W celu wysłania wiadomości należy wpisać tekst w odpowiednie pole i nacisnąć przycisk \textit{decode and send}. W przypadku odebrania wiadomości, zostanie wyświetlony komunikat w dolnym oknie, aby ją wyświetlić należy nacisnąć przyciski \textit{read next message}.
+\item Gdy w oknie komunikatów obu aplikacji pojawi się informacja o wygenerowaniu kluczy oraz o otrzymaniu klucza publicznego od drugiego użytkownika (rysunek \ref{fig:key_gen}), możemy przejść do wysyłania i odbierania wiadomości. W celu wysłania wiadomości należy wpisać tekst w odpowiednie pole i nacisnąć przycisk \textit{Decode and send}. Następnie można odczytać wysłaną wiadomość w drugiej aplikacji, poprzez naciśnięcie przycisku \textit{Read next message}.
 \end{enumerate}
+
+\begin{figure}[!t]
+	\centering
+	\includegraphics[scale=0.85]{img/main_window.png}
+	\caption{Główne okno programu}
+	\label{fig:main_window}
+\end{figure}
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[scale=0.85]{img/key_gen.png}
+	\caption{Przykładowy log zawierający informacje o wygenerowanych kluczach}
+	\label{fig:key_gen}
+\end{figure}
 
 	
 \end{document}
