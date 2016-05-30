@@ -9,6 +9,8 @@
 \usepackage{graphicx}
 \usepackage{float}
 
+\usepackage[hidelinks]{hyperref}
+
 \usepackage{amsmath}
 \usepackage{algorithm}
 \usepackage[noend]{algpseudocode}
@@ -184,7 +186,7 @@ $t_{i+1} = t_{i-1} - q_{i} t_{i} = 1$
 Gdzie $q_i$ definiujemy jako iloraz liczb $r_{i-1}$ oraz $r_i$. Warunkiem stopu jest $r_{k+1} = 0$, w takim przypadku szukane wartości $x$ i $y$ to odpowiednio $s_k$ oraz $t_k$. 
  
 \subsection{Największy wspólny dzielnik dla dużych liczb}
-Największy wspólny dzielnik liczb $a$ i $b$ oznaczany jako $gcd(a,b)$ może zostać wyznaczony między innymi algorytmem binarnym. Został on wybrany ze względu na łatwość implementacji i wydajność, w przeciwieństwie do innych metod (np. metody Euklidesa) wymaga jedynie dzielenia przez 2. Algorytm został przedstawiony w postaci pseudokodu (funkcja \textit{gcd}).
+Największy wspólny dzielnik liczb $a$ i $b$ oznaczany jako $gcd(a,b)$ może zostać wyznaczony między innymi algorytmem binarnym. Został on wybrany ze względu na łatwość implementacji i wydajność, w przeciwieństwie do innych metod (np. metody Euklidesa) wymaga jedynie dzielenia przez 2. Algorytm został przedstawiony w postaci pseudokodu (funkcja \hyperref[fun_gcd]{\textit{gcd}}).
 
 \begin{algorithm} \label{fun_gcd}
 \begin{algorithmic}[1]
@@ -217,7 +219,7 @@ Zgodnie z opisem w sekcji \ref{encode_decode} szyfrowanie polega na przeprowadze
 c \equiv b^e \mod m
 \end{equation}
 
-W celu poprawienia wydajności można do tego celu użyć metody binarnej, która została przedstawiona postaci pseudokodu (funkcja \textit{modPow}).
+W celu poprawienia wydajności można do tego celu użyć metody binarnej, która została przedstawiona postaci pseudokodu (funkcja \hyperref[fun_modPow]{\textit{modPow}}).
 
 
 \begin{algorithm} \label{fun_modPow}
@@ -258,9 +260,32 @@ Do obliczenia wartości $q_{inv}$ możemy użyć metody opisanej w sekcji \ref{m
 
 \section{Implementacja}
 \subsection{Użyty język i biblioteki}
-\subsection{Funkcjonalność}
-\subsection{Interfejs użytkownika}
 
+Implementacja algorytmu RSA została wykonana w języku \textit{JAVA}, napisany program umożliwia przesyłanie zaszyfrowanych wiadomości tekstowych pomiędzy dwoma komputerami. Do obliczeń matematycznych wykorzystano bibliotekę \textit{BigInteger}, która daje możliwość operowania na bardzo dużych liczbach całkowitych (o~szerokości kilkuset bitów). Komunikacja odbywa się z wykorzystaniem protokołu \textit{TCP IP}. Graficzny interfejs użytkownika został wykonany w technologi \textit{JavaFX}. Dzięki zastosowanemu podejściu, program jest uniwersalny i może zostać z łatwością uruchomiony na każdym systemie operacyjnym. 
+
+\subsection{Funkcjonalność}
+
+Jak zostało wspomniane w poprzednim punkcie aplikacja służy do przesyłania wiadomości tekstowych. Jej działanie może zostać przetestowane poprzez uruchomienie na dwóch komputerach znajdujących się w jednej sieci lub z wykorzystaniem jednego komputera i lokalnego hosta (dokładny opis w rozdziale \ref{}). 
+
+Program może zostać uruchomiony w trybie klienta lub serwera, przesyłanie wiadomości jest możliwe oczywiście w obu kierunkach. Dodatkowo w każdym kierunku komunikacji mamy możliwość określenia innej długości klucza szyfrującego. Po nawiązaniu połączenia następuje generacja klucza publicznego i prywatnego po obu stronach, następnie strony wymieniają się kluczami publicznymi. Od tego momentu zarówno serwer jak i klient mogą przesyłać szyfrowane wiadomości. 
+
+W sekcji \ref{} został przedstawiony schemat szyfrowania pojedynczego bloku danych, w przypadku napisanej aplikacji istnieje możliwość wysyłania wiadomości tekstowych o dowolnej długości. Napisany tekst jest dzielony na równe bloki (ostatni jest oczywiście dopełniany zerami), długość tego bloku jest na nowo losowana dla każdej kolejnej wiadomości. Podczas szyfrowania zgodnie ze wzorem (\ref{}) konieczne jest dodatkowo dopełnienie otrzymanej wartości zerowymi bitami tak, aby jej długość była równa długości klucza $n$ (sekcja \ref{}). Dzięki temu każdy zaszyfrowany blok ma identyczną długość w bitach i zaszyfrowana wiadomość może być łatwo podzielona przez odbiorcę, następnie każdy z bloków jest rozszyfrowywany osobno.
+
+W oknie aplikacji oprócz podglądu wiadomości w postaci normalnego tekstu, dostępna jest także jej zakodowana postać (w tym przypadku wiadomość jest wyświetlana jako ciąg bajtów). Dodatkowo w oknie komunikatów wyświetlane są informacje o przychodzących i wysyłanych wiadomościach oraz klucze wykorzystywane do szyfrowania. 
+
+\subsection{Manual}
+
+W celu przetestowania aplikacji należy postępować zgodnie z poniższą instrukcją:
+
+\begin{enumerate}
+\item Program należy uruchomić na dwóch komputerach znajdujących się w jednej sieci lub dwa razy na jednym komputerze (okno aplikacji nie jest zbyt duże zatem bez problemu można operować na dwóch jednocześnie).
+
+\item Po uruchomieniu ukaże nam się ekran przedstawiony na rysunku \ref{}. Najpierw w jednej aplikacji wybieramy \textit{server mode} i naciskamy \textit{connect}, następnie drugą aplikacje uruchamiamy w trybie \textit{client mode}.
+
+\item Po tej czynności ukaże nam się główne okno programu (rysunek \ref{}). W oknie na dole powinien pojawić się komunikat o pomyślnym nawiązaniu połączenia. w tym momencie wystarczy zdefiniować w obu oknach długość klucza i nacisnąć przycisk \textit{start}.
+
+\item Gdy w oknie komunikatów pojawi się komunikat o wygenerowaniu kluczy oraz klucz publiczny otrzymany od drugiego użytkownika, możemy przejść do wysyłania i odbierania wiadomości. W celu wysłania wiadomości należy wpisać tekst w odpowiednie pole i nacisnąć przycisk \textit{decode and send}. W przypadku odebrania wiadomości, zostanie wyświetlony komunikat w dolnym oknie, aby ją wyświetlić należy nacisnąć przyciski \textit{read next message}.
+\end{enumerate}
 
 	
 \end{document}
