@@ -10,7 +10,7 @@ public class ServerManager extends CommunicationManager{
     {
         super("Server");
         mServerSocket = new ServerSocket(port);
-        mServerSocket.setSoTimeout(1000);
+        mServerSocket.setSoTimeout(10000);
 
         this.start();
     }

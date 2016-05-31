@@ -7,6 +7,7 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
 import javax.xml.bind.DatatypeConverter;
+import java.nio.charset.Charset;
 
 public class Main extends Application{
 
@@ -24,6 +25,7 @@ public class Main extends Application{
         /*
         new Thread(() -> {
             test();
+
         }).start();
         */
     }

@@ -8,6 +8,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.Button;
 
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -71,11 +72,9 @@ public class MainWindowController {
 
         byte [] decoded = mCipher.messageDecode(msg);
         receivedMsgTextArea.setText(Arrays.toString(msg));
-        try {
-            decodedMsgTextArea.setText(new String(decoded, "UTF-8"));
-        } catch (Exception e){
-            System.out.println(e.getMessage());
-        }
+
+        decodedMsgTextArea.setText(new String(decoded, Charset.forName("UTF-8")));
+
     }
 
 
@@ -83,7 +82,7 @@ public class MainWindowController {
 
         try {
             String msg = plainTextArea.getText();
-            byte [] encodedMsg = mCipher.messageEncode(msg.getBytes("UTF-8"));
+            byte [] encodedMsg = mCipher.messageEncode(msg.getBytes(Charset.forName("UTF-8")));
 
             mCommunicationManager.send(encodedMsg);
             encodedMsgTextArea.setText(Arrays.toString(encodedMsg));

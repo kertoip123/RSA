@@ -21,23 +21,19 @@ public class RSACipher implements AsymmetricCipher {
         return mPublicKey;
     }
 
-    public RSACipher(){
-        generateKeys();
-    }
-
     public RSACipher(int keyLength){
-        this();
         mKeyLength = keyLength;
+        generateKeys();
     }
 
     private void generateKeys(){
 
         int lenDiff = new Random().nextInt(5);
 
-        BigInteger p = BigInteger.probablePrime(mKeyLength /2 + lenDiff, new Random());
+        BigInteger p = BigInteger.probablePrime(mKeyLength/2 + lenDiff, new Random());
         BigInteger q;
         while(true) {
-            q = BigInteger.probablePrime(mKeyLength /2 - lenDiff, new Random());
+            q = BigInteger.probablePrime(mKeyLength/2 - lenDiff, new Random());
             if(!q.equals(p))
                 break;
         }
@@ -82,7 +78,7 @@ public class RSACipher implements AsymmetricCipher {
 
         for(byte [] bytes : dividedMessage){
 
-            m = new BigInteger(bytes);
+            m = new BigInteger(1, bytes);
             c = m.modPow(mPeerPublicKey.getValue(), mPeerPublicKey.getModulus());
             encodedBytes.add(convertNumberToBytes(c, mPeerPublicKey.countModulusByteSize()));
 
@@ -102,6 +98,7 @@ public class RSACipher implements AsymmetricCipher {
             c = new BigInteger(bytes);
             m = c.modPow(mPrivateKey.getValue(), mPrivateKey.getModulus());
             decodedBytes.add(m.toByteArray());
+  
 
         }
 
@@ -189,18 +186,5 @@ public class RSACipher implements AsymmetricCipher {
     public static void setLogger(Logger logger){
         RSACipher.logger = logger;
     }
-    /*
-    public String getGeneratedKeysInfo(){
 
-        BigInteger n = mPublicKey.getModulus();
-        BigInteger e = mPublicKey.getValue();
-        BigInteger d = mPrivateKey.getValue();
-
-        String result = "n = " + n.toString(16) + "\n" +
-                "e = " + e.toString(16) + "\n" +
-                "d = " + d.toString(16);
-
-        return result;
-    }
-    */
 }
