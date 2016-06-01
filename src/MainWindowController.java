@@ -52,6 +52,7 @@ public class MainWindowController {
             mCommunicationManager.send(myPublicKey.toString().getBytes());
         }catch (Exception e){
             logger.fine(e.getMessage());
+            return;
         }
 
         startBtn.setDisable(true);

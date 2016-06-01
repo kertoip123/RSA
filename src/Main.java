@@ -4,6 +4,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import javafx.stage.WindowEvent;
 
 import javax.xml.bind.DatatypeConverter;
@@ -33,7 +34,7 @@ public class Main extends Application{
     public static void main(String [] args){ launch(args); }
 
 
-    public static MainWindowController initMainApplication() throws Exception{
+    public static MainWindowController initMainApplication(Stage parent) throws Exception{
 
         FXMLLoader fxmlLoader = new FXMLLoader();
 
@@ -42,7 +43,13 @@ public class Main extends Application{
         Stage stage = new Stage();
         stage.setTitle("RSA Application");
         stage.setScene(new Scene(root));
+        
+        double x = parent.getX() + parent.getWidth()/2;
+        double y = parent.getY() + parent.getHeight()/2;
+
         stage.show();
+        stage.setX(x  - stage.getWidth()/2);
+        stage.setY(y  - stage.getHeight()/2);
 
         MainWindowController controller = fxmlLoader.getController();
         controller.initLogger();

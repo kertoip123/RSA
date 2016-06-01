@@ -7,6 +7,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 /**
  * Created by piotrek on 03.05.2016.
@@ -35,7 +36,10 @@ public class ConfigPanelController {
     @FXML protected void handleStartBtnAction(ActionEvent event) {
         try {
 
-            MainWindowController controller = Main.initMainApplication();
+            Stage stage = (Stage)((Button)event.getSource()).getScene().getWindow();
+
+            MainWindowController controller = Main.initMainApplication(stage);
+
             CommunicationManager.addLogHandler(new TextAreaHandler(controller.getLogTextArea()));
             CommunicationManager communicationManager = null;
 
@@ -53,7 +57,7 @@ public class ConfigPanelController {
             controller.setCommunicationManager(communicationManager);
 
             //close config window
-            ((Stage)((Button)event.getSource()).getScene().getWindow()).close();
+            stage.close();
 
         }catch (Exception e){
             System.out.println(e.getMessage());

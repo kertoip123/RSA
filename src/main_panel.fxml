@@ -15,7 +15,7 @@
       <HBox alignment="CENTER" prefHeight="68.0" prefWidth="600.0">
          <children>
             <Label text="Key Length " />
-            <TextField fx:id="keyLenTextField" prefWidth="70" />
+            <TextField fx:id="keyLenTextField" prefWidth="70" text="128" />
             <Separator prefWidth="50.0" visible="false" />
             <Button fx:id="startBtn" mnemonicParsing="false" onAction="#handleStartAction" prefWidth="100" text="Start" />
          </children>
