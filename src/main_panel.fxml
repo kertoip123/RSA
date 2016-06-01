@@ -90,7 +90,7 @@
                         </ScrollPane>
                      </children>
                   </VBox>
-                  <Button fx:id="encodeSendBtn" disable="true" mnemonicParsing="false" onAction="#handleEncodeSendAction" text="Decode and send" />
+                  <Button fx:id="encodeSendBtn" disable="true" mnemonicParsing="false" onAction="#handleEncodeSendAction" text="Encode and send" />
                </children>
             </VBox>
          </children>

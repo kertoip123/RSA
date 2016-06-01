@@ -285,7 +285,7 @@ Do obliczenia wartości $q_{inv}$ możemy użyć metody opisanej w sekcji \ref{m
 \section{Implementacja}
 \subsection{Użyty język i biblioteki}
 
-Implementacja algorytmu RSA została wykonana w języku \textit{JAVA}, napisany program umożliwia przesyłanie zaszyfrowanych wiadomości tekstowych pomiędzy dwoma komputerami. Do obliczeń matematycznych wykorzystano bibliotekę \textit{BigInteger}, która daje możliwość operowania na bardzo dużych liczbach całkowitych (o~szerokości kilkuset bitów). Komunikacja odbywa się z wykorzystaniem protokołu \textit{TCP IP}. Graficzny interfejs użytkownika został wykonany w technologi \textit{JavaFX}. Dzięki zastosowanemu podejściu, program jest uniwersalny i może zostać z łatwością uruchomiony na każdym systemie operacyjnym. 
+Implementacja algorytmu RSA została wykonana w języku \textit{JAVA}, napisany program umożliwia przesyłanie zaszyfrowanych wiadomości tekstowych pomiędzy dwoma komputerami. Do obliczeń matematycznych wykorzystano bibliotekę \textit{BigInteger}, która daje możliwość operowania na bardzo dużych liczbach całkowitych (o~szerokości kilkuset bitów). Komunikacja odbywa się z wykorzystaniem protokołu \textit{TCP/IP}. Graficzny interfejs użytkownika został wykonany w technologi \textit{JavaFX}. Dzięki zastosowanemu podejściu, program jest uniwersalny i może zostać z łatwością uruchomiony na każdym systemie operacyjnym. 
 
 \subsection{Funkcjonalność}
 
@@ -316,7 +316,7 @@ W celu przetestowania aplikacji należy postępować zgodnie z poniższą instru
 
 \item Po tej czynności ukaże nam się główne okno programu (rysunek \ref{fig:main_window}). W polu na dole powinien pojawić się komunikat o pomyślnym nawiązaniu połączenia. W tym momencie należy w obu aplikacjach zdefiniować długość klucza i nacisnąć przycisk \textit{Start}.
 
-\item Gdy w oknie komunikatów obu aplikacji pojawi się informacja o wygenerowaniu kluczy oraz o otrzymaniu klucza publicznego od drugiego użytkownika (rysunek \ref{fig:key_gen}), możemy przejść do wysyłania i odbierania wiadomości. W celu wysłania wiadomości należy wpisać tekst w odpowiednie pole i nacisnąć przycisk \textit{Decode and send}. Następnie można odczytać wysłaną wiadomość w drugiej aplikacji, poprzez naciśnięcie przycisku \textit{Read next message}.
+\item Gdy w oknie komunikatów obu aplikacji pojawi się informacja o wygenerowaniu kluczy oraz o otrzymaniu klucza publicznego od drugiego użytkownika (rysunek \ref{fig:key_gen}), możemy przejść do wysyłania i odbierania wiadomości. W celu wysłania wiadomości należy wpisać tekst w odpowiednie pole i nacisnąć przycisk \textit{Eecode and send}. Następnie można odczytać wysłaną wiadomość w drugiej aplikacji, poprzez naciśnięcie przycisku \textit{Read next message}. Otrzymane wiadomości są przechowywane w kolejce \textit{FIFO}.
 \end{enumerate}
 
 \begin{figure}[!t]
